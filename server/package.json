@@ -1,10 +1,10 @@
 {
-  "name": "lms-system",
+  "name": "lms-app",
   "version": "1.0.0",
   "description": "A learning management system",
-  "main": "server.ts",
+  "main": "startUps/server.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only server.ts"
+    "dev": "ts-node-dev --respawn --transpile-only startUps/server.ts"
   },
   "repository": {
     "type": "git",
