@@ -1,0 +1,53 @@
+{
+  "name": "lms-system",
+  "version": "1.0.0",
+  "description": "A learning management system",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UcheTheo/LMS.git"
+  },
+  "author": "Theophilus Uchechukwu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UcheTheo/LMS/issues"
+  },
+  "homepage": "https://github.com/UcheTheo/LMS#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.41.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.0.0",
+    "i": "^0.3.7",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "npm": "^10.2.5",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.5",
+    "@types/cookie-parser": "^1.4.5",
+    "@types/cors": "^2.8.15",
+    "@types/ejs": "^3.1.4",
+    "@types/express": "^4.17.20",
+    "@types/express-serve-static-core": "^4.17.39",
+    "@types/jsonwebtoken": "^9.0.4",
+    "@types/morgan": "^1.9.7",
+    "@types/node": "^20.8.10",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.13"
+  }
+}
