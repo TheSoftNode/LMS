@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const connectDB = async (db) => {
+const connectDB = async (db: string) => {
   try {
     const con: any = await mongoose.connect(db);
     console.log(`Database connected with ${con.connection.host}`);
