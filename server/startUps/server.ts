@@ -2,6 +2,7 @@ import path from "path";
 import dotenv from "dotenv";
 import connectDB from "../dataAccess/mongoDB";
 import app from "./app";
+import { cloudImageStore } from "../dataAccess/cloudinary";
 
 // Handle uncaughtException
 process.on("uncaughtException", (err) => {
@@ -18,6 +19,9 @@ dotenv.config({
 // Bring in the connection string
 const DB_CLOUD: string =
   process.env.DB_CLOUD.replace("<password>", process.env.PASSWORD) || "";
+
+// Initialize cloudinary for storing images
+cloudImageStore();
 
 // Create a port
 const port = process.env.PORT || 3000;
