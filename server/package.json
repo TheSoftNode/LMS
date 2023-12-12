@@ -35,7 +35,8 @@
     "nodemailer": "^6.9.7",
     "npm": "^10.2.5",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.5",
@@ -48,6 +49,7 @@
     "@types/morgan": "^1.9.7",
     "@types/node": "^20.8.10",
     "@types/node-cron": "^3.0.11",
-    "@types/nodemailer": "^6.4.13"
+    "@types/nodemailer": "^6.4.13",
+    "@types/validator": "^13.11.7"
   }
 }
