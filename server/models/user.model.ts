@@ -105,20 +105,6 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-// Sign Access token
-userSchema.methods.SignInAccessToken = function (id: ObjectId) {
-  return jwt.sign({ id }, process.env.ACCESS_TOKEN as Secret, {
-    expiresIn: "3m",
-  });
-};
-
-// Sign Refresh token
-userSchema.methods.SignInRefreshToken = function (id: ObjectId) {
-  return jwt.sign({ id }, process.env.REFRESH_TOKEN as Secret, {
-    expiresIn: "3d",
-  });
-};
-
 userSchema.methods.correctPassword = async function (
   candidatePassword: string,
   userPassword: string
@@ -128,9 +114,7 @@ userSchema.methods.correctPassword = async function (
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp: number) {
   if (this.passwordChangedAt) {
-    const changedTimestamp = this.passwordChangedAt.getTime() / 1000; //parseInt(
-    //     10
-    //   );
+    const changedTimestamp = this.passwordChangedAt.getTime() / 1000;
 
     return JWTTimestamp < changedTimestamp;
   }

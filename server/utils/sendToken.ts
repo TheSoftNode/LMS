@@ -1,6 +1,8 @@
 import { Response } from "express";
 import IUser from "../models/Interfaces/userInterface";
 import { redis } from "../dataAccess/redis";
+import jwt, { Secret } from "jsonwebtoken";
+import { ObjectId } from "mongoose";
 
 interface ITokenOptions {
   expires: Date;
@@ -36,9 +38,13 @@ export const refreshTokenOptions: ITokenOptions = {
   sameSite: "lax",
 };
 
+// Prepare and send token to the user
 export const sendToken = (user: IUser, statusCode: number, res: Response) => {
-  const accessToken = user.SignInAccessToken(user._id);
-  const refreshToken = user.SignInRefreshToken(user._id);
+  //   const accessToken = user.SignInAccessToken(user._id, "3m");
+  //   const refreshToken = user.SignInRefreshToken(user._id, "3d");
+
+  const accessToken = SignInAccessToken(user._id, "3m");
+  const refreshToken = SignInRefreshToken(user._id, "3d");
 
   // Upload session to redis
   redis.set(user._id, JSON.stringify(user) as any);
@@ -57,5 +63,19 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
     success: true,
     user,
     accessToken,
+  });
+};
+
+// Sign Access token
+export const SignInAccessToken = function (id: ObjectId, exp: string) {
+  return jwt.sign({ id }, process.env.ACCESS_TOKEN as Secret, {
+    expiresIn: exp,
+  });
+};
+
+// Sign Refresh token
+export const SignInRefreshToken = function (id: ObjectId, exp: string) {
+  return jwt.sign({ id }, process.env.REFRESH_TOKEN as Secret, {
+    expiresIn: exp,
   });
 };

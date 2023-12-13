@@ -20,9 +20,7 @@ export default interface IUser extends Document {
     candidatePassword: string,
     userPassword: string
   ) => Promise<boolean>;
-  SignInAccessToken: (id: ObjectId) => string;
-  SignInRefreshToken: (id: ObjectId) => string;
   changedPasswordAfter: (JWTTimestamp: number) => boolean;
   createPasswordResetToken: () => string;
-  find: (filter) => Array<[]>;
+  find: (filter: any) => Array<[]>;
 }

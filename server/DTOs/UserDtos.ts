@@ -37,6 +37,7 @@ export interface IUpdateUserInfo {
 export interface IUpdatePassword {
   oldPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 //update profile picture

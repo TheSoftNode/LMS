@@ -1,9 +1,29 @@
 import express from "express";
-import { signUp, verifyAccount } from "../controllers/auth.controller";
+import {
+  login,
+  logout,
+  refreshToken,
+  signUp,
+  updatePassword,
+  updateUserInfo,
+  verifyAccount,
+} from "../controllers/auth.controller";
+import { isAuthenticated } from "../middlewares/protectRoute2";
+import { getUserInfo, socialAuth } from "../controllers/user.controller";
 
 const router = express.Router();
 
 router.route("/verify-account").post(verifyAccount);
 router.route("/signUp").post(signUp);
+router.route("/login").post(login);
+router.route("/refreshToken").get(refreshToken);
+
+router.use(isAuthenticated);
+
+router.route("/logout").get(logout);
+router.route("/me").get(getUserInfo);
+router.route("/social-auth").post(socialAuth);
+router.route("/update-user-info").patch(updateUserInfo);
+router.route("/update-password").patch(updatePassword);
 
 export default router;

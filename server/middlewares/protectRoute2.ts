@@ -3,6 +3,7 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../errorsHandlers/appError";
 import Jwt, { JwtPayload } from "jsonwebtoken";
 import { redis } from "../dataAccess/redis";
+import User from "../models/user.model";
 
 export const isAuthenticated = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -19,9 +20,20 @@ export const isAuthenticated = catchAsync(
     if (!decoded) return next(new AppError("Invalid Access Token", 400));
 
     const user = await redis.get(decoded.id);
+    const currentUser = await User.findById(decoded.id);
 
     if (!user)
       return next(new AppError("Please login to access this resource", 400));
+
+    // 4) Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next(
+        new AppError(
+          "User recently changed password! Please log in again.",
+          401
+        )
+      );
+    }
 
     req.user = JSON.parse(user);
     next();
