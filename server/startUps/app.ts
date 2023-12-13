@@ -6,6 +6,8 @@ import morgan from "morgan";
 import helmet from "helmet";
 import { NextFunction, Request, Response } from "express";
 
+import userRouter from "../routes/user.route";
+
 const app = express();
 
 // Always put at the top of all middlewares
@@ -34,6 +36,8 @@ const corOptions = cors({
   origin: process.env.ORIGIN,
 });
 app.use(corOptions);
+
+app.use("/api/v1/users", userRouter);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   const err: any = new Error(`Can't find ${req.originalUrl} in this server!`);

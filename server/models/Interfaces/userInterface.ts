@@ -24,4 +24,5 @@ export default interface IUser extends Document {
   SignInRefreshToken: (id: ObjectId) => string;
   changedPasswordAfter: (JWTTimestamp: number) => boolean;
   createPasswordResetToken: () => string;
+  find: (filter) => Array<[]>;
 }
