@@ -38,9 +38,6 @@ export default class Email {
     //Render the email template with EJS
     const html: string = await ejs.renderFile(emailTemplatePath, this.data);
 
-    console.log(this.data);
-    console.log(this.to);
-
     // Define mail options
     const mailOptions = {
       from: this.from,
@@ -62,5 +59,12 @@ export default class Email {
 
   async activateRegistration() {
     await this.send("activation-mail.ejs", "Activate Your Account");
+  }
+
+  async sendPasswordReset() {
+    await this.send(
+      "forgot-password.ejs",
+      "Your password reset token (valid for only 10 minutes)"
+    );
   }
 }

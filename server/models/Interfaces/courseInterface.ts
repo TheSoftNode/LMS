@@ -1,0 +1,22 @@
+import { Document, ObjectId } from "mongoose";
+import { ICourseData } from "./courseDataInterface";
+
+export default interface ICourse extends Document {
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  estimatedPrice?: number;
+  thumbnail: object;
+  tags: string;
+  level: string;
+  demoUrl: string;
+  benefits: { title: string }[];
+  prerequisites: { title: string }[];
+  courseData: ObjectId;
+  ratings?: number;
+  ratingsAverage: number;
+  ratingsQuantity: number;
+  priceDiscount: number;
+  purchased?: number;
+}

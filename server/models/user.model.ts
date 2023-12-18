@@ -3,7 +3,6 @@ import crypto from "crypto";
 import validator from "validator";
 import { NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import jwt, { Secret } from "jsonwebtoken";
 import IUser from "./Interfaces/userInterface";
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
@@ -57,7 +56,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 
     courses: [
       {
-        courseId: String,
+        courseId: Schema.ObjectId,
       },
     ],
 

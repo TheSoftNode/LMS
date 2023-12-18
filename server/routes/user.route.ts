@@ -1,8 +1,10 @@
 import express from "express";
 import {
+  forgotPassword,
   login,
   logout,
   refreshToken,
+  resetPassword,
   signUp,
   updatePassword,
   updateUserInfo,
@@ -17,6 +19,8 @@ router.route("/verify-account").post(verifyAccount);
 router.route("/signUp").post(signUp);
 router.route("/login").post(login);
 router.route("/refreshToken").get(refreshToken);
+router.route("/forgot-password").post(forgotPassword);
+router.patch("/reset-password/:token", resetPassword);
 
 router.use(isAuthenticated);
 
