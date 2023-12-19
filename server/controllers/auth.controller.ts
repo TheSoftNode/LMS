@@ -192,6 +192,7 @@ export const refreshToken = catchAsync(
     res.status(200).json({
       status: "success",
       accessToken,
+      refreshToken,
     });
   }
 );

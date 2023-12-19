@@ -11,7 +11,11 @@ import {
   verifyAccount,
 } from "../controllers/auth.controller";
 import { isAuthenticated } from "../middlewares/protectRoute2";
-import { getUserInfo, socialAuth } from "../controllers/user.controller";
+import {
+  getUserInfo,
+  socialAuth,
+  updateProfilePicture,
+} from "../controllers/user.controller";
 
 const router = express.Router();
 
@@ -29,5 +33,6 @@ router.route("/me").get(getUserInfo);
 router.route("/social-auth").post(socialAuth);
 router.route("/update-user-info").patch(updateUserInfo);
 router.route("/update-password").patch(updatePassword);
+router.route("/upload-profile-picture").patch(updateProfilePicture);
 
 export default router;

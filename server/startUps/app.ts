@@ -5,11 +5,12 @@ import morgan from "morgan";
 // import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { NextFunction, Request, Response } from "express";
+import { mountedRoutes } from "./routes";
 
-import userRouter from "../routes/user.route";
-import courseRouter from "../routes/course.route";
-import courseDataRouter from "../routes/courseData.route";
-import commentRouter from "../routes/comment.route";
+// import userRouter from "../routes/user.route";
+// import courseRouter from "../routes/course.route";
+// import courseDataRouter from "../routes/courseData.route";
+// import commentRouter from "../routes/comment.route";
 
 const app = express();
 
@@ -40,10 +41,12 @@ const corOptions = cors({
 });
 app.use(corOptions);
 
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/courses", courseRouter);
-app.use("/api/v1/courseData", courseDataRouter);
-app.use("/api/v1/comments", commentRouter);
+mountedRoutes(app);
+
+// app.use("/api/v1/users", userRouter);
+// app.use("/api/v1/courses", courseRouter);
+// app.use("/api/v1/courseData", courseDataRouter);
+// app.use("/api/v1/comments", commentRouter);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   const err: any = new Error(`Can't find ${req.originalUrl} in this server!`);

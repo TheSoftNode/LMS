@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/user.model";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../errorsHandlers/appError";
+import cloudinary from "cloudinary";
 import {
   getAllUsersService,
   getUserById,
@@ -64,6 +65,50 @@ export const deleteUser = catchAsync(
     res.status(204).json({
       success: true,
       message: "User deleted successfully",
+    });
+  }
+);
+
+export const updateProfilePicture = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { avatar } = req.body;
+
+    const userId = req.user?._id;
+    const user = await User.findById(userId);
+
+    if (avatar && user) {
+      if (user?.avatar?.public_id) {
+        await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+      }
+
+      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+        folder: "avatars",
+        width: 150,
+      });
+
+      user.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      };
+      //   } else {
+      //     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      //       folder: "avatars",
+      //       width: 150,
+      //     });
+
+      //     user.avatar = {
+      //       public_id: myCloud.public_id,
+      //       url: myCloud.secure_url,
+      //     };
+      //   }
+    }
+
+    await user?.save({ validateBeforeSave: false });
+    await redis.set(req.user?._id, JSON.stringify(user));
+
+    res.status(200).json({
+      success: true,
+      user,
     });
   }
 );
