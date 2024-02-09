@@ -26,7 +26,9 @@ export const socialAuth = catchAsync(
     const { email, name, avatar } = req.body as ISocialAuthBody;
     const user = await User.findOne({ email });
     if (!user) {
-      const newUser = await User.create({ email, name, avatar });
+      //   const newUser = await User.create({ email, name, avatar });
+      const newUser = new User({ email, name, avatar });
+      await newUser?.save({ validateBeforeSave: false });
       sendToken(newUser, 200, res);
     }
 

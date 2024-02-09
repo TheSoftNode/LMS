@@ -4,6 +4,7 @@ import cloudinary from "cloudinary";
 import { createCourse } from "../services/course.service";
 import Course from "../models/course.model";
 import { redis } from "../dataAccess/redis";
+import AppError from "../errorsHandlers/appError";
 
 // Upload course
 export const uploadCourse = catchAsync(
@@ -66,9 +67,10 @@ export const getAllCourses = catchAsync(
     if (isCacheExist) {
       courses = JSON.parse(isCacheExist);
     } else {
-      courses = await Course.find().select(
-        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
-      );
+      courses = await Course.find();
+      //   .select(
+      //     "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      //   );
 
       await redis.set("allCourses", JSON.stringify(courses));
     }
@@ -91,9 +93,10 @@ export const getSingleCourse = catchAsync(
     if (isCacheExist) {
       course = JSON.parse(isCacheExist);
     } else {
-      course = await Course.findById(req.params.id).select(
-        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
-      );
+      course = await Course.findById(req.params.id);
+      //   .select(
+      //     "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      //   );
 
       await redis.set(req.params.id, JSON.stringify(course), "EX", 604800);
     }
@@ -101,6 +104,28 @@ export const getSingleCourse = catchAsync(
     res.status(200).json({
       success: true,
       course,
+    });
+  }
+);
+
+export const getCourseByUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userCourseList = req.user?.courses;
+    const courseId = req.params.Id;
+
+    const courseExists = userCourseList?.find(
+      (course: any) => course._id.toString() === courseId
+    );
+
+    if (!courseExists)
+      return next(new AppError("Your not eligible to access this course", 404));
+
+    const course = await Course.findById(courseId);
+    const content = course?.courseData;
+
+    res.status(200).json({
+      success: true,
+      content,
     });
   }
 );

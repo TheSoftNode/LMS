@@ -106,7 +106,7 @@ courseSchema.pre("save", function (next) {
 courseSchema.pre(/^find/, function (this: any, next) {
   this.populate({
     path: "courseData",
-    select: "-__v",
+    select: "-__v -videoUrl -suggestion -questions -links",
   });
 
   next();

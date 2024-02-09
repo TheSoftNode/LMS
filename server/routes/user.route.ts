@@ -22,6 +22,7 @@ const router = express.Router();
 router.route("/verify-account").post(verifyAccount);
 router.route("/signUp").post(signUp);
 router.route("/login").post(login);
+router.route("/social-auth").post(socialAuth);
 router.route("/refreshToken").get(refreshToken);
 router.route("/forgot-password").post(forgotPassword);
 router.patch("/reset-password/:token", resetPassword);
@@ -30,7 +31,6 @@ router.use(isAuthenticated);
 
 router.route("/logout").get(logout);
 router.route("/me").get(getUserInfo);
-router.route("/social-auth").post(socialAuth);
 router.route("/update-user-info").patch(updateUserInfo);
 router.route("/update-password").patch(updatePassword);
 router.route("/upload-profile-picture").patch(updateProfilePicture);

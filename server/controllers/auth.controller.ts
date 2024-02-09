@@ -28,7 +28,7 @@ import { redis } from "../dataAccess/redis";
 export const createActivationToken = (user: any): IActivationToken => {
   const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-  const token = jwt.sign(
+  const activationToken = jwt.sign(
     { user, activationCode },
     process.env.JWT_SECRET as Secret,
     {
@@ -36,7 +36,7 @@ export const createActivationToken = (user: any): IActivationToken => {
     }
   );
 
-  return { token, activationCode };
+  return { activationToken, activationCode };
 };
 
 // Verify Account before saving it.
@@ -54,7 +54,7 @@ export const verifyAccount = catchAsync(
       passwordConfirm,
     };
 
-    const { token, activationCode } = createActivationToken(user);
+    const { activationToken, activationCode } = createActivationToken(user);
     // const activationCode = activationToken.activationCode;
 
     const data = {
@@ -67,7 +67,7 @@ export const verifyAccount = catchAsync(
     res.status(201).json({
       success: true,
       message: `Please check your email: ${user.email} to activate your account!`,
-      token,
+      activationToken,
     });
   }
 );
@@ -76,16 +76,19 @@ export const verifyAccount = catchAsync(
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     // 1) Getting token and check of it's there
-    let activation_token: string;
+    // let activation_token: string;
 
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
-      activation_token = req.headers.authorization.split(" ")[1];
-    }
+    // if (
+    //   req.headers.authorization &&
+    //   req.headers.authorization.startsWith("Bearer")
+    // ) {
+    //   activation_token = req.headers.authorization.split(" ")[1];
+    // }
 
-    const { activation_code } = req.body as IActivationRequest;
+    const { activation_token, activation_code } =
+      req.body as IActivationRequest;
+
+    console.log(activation_token);
 
     const newUser: { user: IUser; activationCode: string } = jwt.verify(
       activation_token,
@@ -200,16 +203,16 @@ export const refreshToken = catchAsync(
 // Update user info
 export const updateUserInfo = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, email } = req.body as IUpdateUserInfo;
+    const { name } = req.body as IUpdateUserInfo;
     const userId = req.user?._id;
     const user = await User.findById(userId);
 
-    if (email && user) {
-      const emailExist = await User.findOne({ email });
-      if (emailExist) return next(new AppError("Email Already exists", 400));
+    // if (email && user) {
+    //   const emailExist = await User.findOne({ email });
+    //   if (emailExist) return next(new AppError("Email Already exists", 400));
 
-      user.email = email;
-    }
+    //   user.email = email;
+    // }
 
     if (name && user) user.name = name;
 
@@ -286,7 +289,7 @@ export const forgotPassword = catchAsync(
         resetToken,
         resetURL: `${req.protocol}://${req.get(
           "host"
-        )}/api/v1/users/resetPassword/${resetToken}`,
+        )}/api/v1/users/reset-password/${resetToken}`,
       };
 
       await new Email(user, data).sendPasswordReset();
@@ -331,6 +334,7 @@ export const resetPassword = catchAsync(
     user.passwordConfirm = req.body.confirmPassword;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
+    user.passwordChangedAt = Date.now();
     await user.save();
 
     // 3) Update changedPasswordAt property for the user

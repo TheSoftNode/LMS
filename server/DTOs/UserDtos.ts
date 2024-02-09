@@ -2,12 +2,12 @@ export interface IRegistrationBody {
   name: string;
   email: string;
   password: string;
-  passwordConfirm: string;
+  passwordConfirm?: string;
   avatar?: string;
 }
 
 export interface IActivationToken {
-  token: string;
+  activationToken: string;
   activationCode: string;
 }
 

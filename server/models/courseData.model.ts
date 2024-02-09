@@ -27,7 +27,7 @@ export const courseDataSchema = new Schema<ICourseData>({
 courseDataSchema.pre(/^find/, function (this: any, next: NextFunction) {
   this.populate({
     path: "questions",
-    select: "-_v",
+    select: "-__v",
   });
 
   next();

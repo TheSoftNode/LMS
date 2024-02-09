@@ -67,4 +67,8 @@ export default class Email {
       "Your password reset token (valid for only 10 minutes)"
     );
   }
+
+  async OrderConfirmation() {
+    await this.send("order-confirmation.ejs", "Order Confirmation");
+  }
 }

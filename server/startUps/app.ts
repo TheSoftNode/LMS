@@ -5,6 +5,7 @@ import morgan from "morgan";
 // import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { NextFunction, Request, Response } from "express";
+import globalErrorHandler from "../errorsHandlers/errorHandler";
 import { mountedRoutes } from "./routes";
 
 // import userRouter from "../routes/user.route";
@@ -37,7 +38,9 @@ app.use(cookieParser());
 
 // The cross origin resource sharing
 const corOptions = cors({
-  origin: process.env.ORIGIN,
+  //   origin: process.env.ORIGIN,
+  origin: ["http://localhost:3000"],
+  credentials: true,
 });
 app.use(corOptions);
 
@@ -54,5 +57,7 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   next(err);
   // next(new AppError(`Can't find ${req.originalUrl} in this server!`, 404));
 });
+
+app.use(globalErrorHandler);
 
 export default app;
