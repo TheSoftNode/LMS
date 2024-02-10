@@ -18,7 +18,7 @@ const page = (props: Props) => {
     <div>
       <Protected>
         <Heading
-          title={`${user?.name} profile`}
+          title={`${user?.name} profile - LMS`}
           description="ELearning is a platform for students to learn and get help from teachers"
           keywords="Programming, Nextjs, Nodejs, Redux"
         />
