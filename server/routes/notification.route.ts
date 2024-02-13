@@ -5,15 +5,19 @@ import {
 } from "../controllers/notification.controller";
 import { isAuthenticated } from "../middlewares/protectRoute2";
 import { restrictTo } from "../middlewares/roleManager2";
+import { refreshToken } from "../controllers/auth.controller";
 
 const router = express.Router();
 
+router.use(refreshToken);
+router.use(isAuthenticated);
+
 router
   .route("/get-all-notifications")
-  .get(isAuthenticated, restrictTo("admin"), getNotifications);
+  .get(restrictTo("admin"), getNotifications);
 
 router
   .route("/update-notification/:id")
-  .put(isAuthenticated, restrictTo("admin"), updateNotification);
+  .put(restrictTo("admin"), updateNotification);
 
 export default router;

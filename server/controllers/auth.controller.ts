@@ -192,11 +192,12 @@ export const refreshToken = catchAsync(
 
     await redis.set(user._id, JSON.stringify(user), "EX", 604800); //7days
 
-    res.status(200).json({
-      status: "success",
-      accessToken,
-      refreshToken,
-    });
+    // res.status(200).json({
+    //   status: "success",
+    //   accessToken,
+    //   refreshToken,
+    // });
+    next();
   }
 );
 

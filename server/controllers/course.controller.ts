@@ -8,6 +8,7 @@ import AppError from "../errorsHandlers/appError";
 import mongoose from "mongoose";
 import Notification from "../models/notification.model";
 import Email from "../emails/email";
+import axios from "axios";
 
 // Upload course
 export const uploadCourse = catchAsync(

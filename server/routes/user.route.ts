@@ -27,6 +27,7 @@ router.route("/refreshToken").get(refreshToken);
 router.route("/forgot-password").post(forgotPassword);
 router.patch("/reset-password/:token", resetPassword);
 
+router.use(refreshToken);
 router.use(isAuthenticated);
 
 router.route("/logout").get(logout);
