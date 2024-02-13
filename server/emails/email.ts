@@ -71,4 +71,8 @@ export default class Email {
   async OrderConfirmation() {
     await this.send("order-confirmation.ejs", "Order Confirmation");
   }
+
+  async questionReply() {
+    await this.send("question-reply.ejs", "Question Reply");
+  }
 }

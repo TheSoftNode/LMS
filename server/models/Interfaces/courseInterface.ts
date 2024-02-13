@@ -1,9 +1,9 @@
 import { Document, ObjectId } from "mongoose";
 import { ICourseData } from "./courseDataInterface";
+import IReview from "./reviewInterface";
 
 export default interface ICourse extends Document {
   name: string;
-  slug: string;
   description: string;
   price: number;
   estimatedPrice?: number;
@@ -13,10 +13,28 @@ export default interface ICourse extends Document {
   demoUrl: string;
   benefits: { title: string }[];
   prerequisites: { title: string }[];
-  courseData: ObjectId;
+  reviews: IReview[];
+  courseData: ICourseData[];
   ratings?: number;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  priceDiscount: number;
   purchased?: number;
 }
+
+// export default interface ICourse extends Document {
+//   name: string;
+//   slug: string;
+//   description: string;
+//   price: number;
+//   estimatedPrice?: number;
+//   thumbnail: object;
+//   tags: string;
+//   level: string;
+//   demoUrl: string;
+//   benefits: { title: string }[];
+//   prerequisites: { title: string }[];
+//   courseData: ObjectId;
+//   ratings?: number;
+//   ratingsAverage: number;
+//   ratingsQuantity: number;
+//   priceDiscount: number;
+//   purchased?: number;
+// }
