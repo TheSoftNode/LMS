@@ -2,7 +2,9 @@ import express from "express";
 import {
   addAnswer,
   addQuestion,
+  deleteCourse,
   editCourse,
+  generateVideoUrl,
   getAllCourses,
   getCourseByUser,
   getSingleCourse,
@@ -20,6 +22,12 @@ router
 router
   .route("/edit-course/:id")
   .put(isAuthenticated, restrictTo("admin"), editCourse);
+
+router
+  .route("/delete-course/:id")
+  .delete(isAuthenticated, restrictTo("admin"), deleteCourse);
+
+router.route("/getVdoCipherOTP").post(generateVideoUrl);
 
 router.route("/get-course/:id").get(getSingleCourse);
 router.route("/get-courses").get(getAllCourses);

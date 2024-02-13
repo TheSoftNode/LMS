@@ -379,3 +379,28 @@ export const getAllCoursesByAdmin = catchAsync(
     getAllCoursesService(res);
   }
 );
+
+// Generate video url
+export const generateVideoUrl = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { videoId } = req.body;
+
+      const response = await axios.post(
+        `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+        { ttl: 300 },
+        {
+          headers: {
+            Accept: "application/json",
+            "content-Type": "application/json",
+            Authorization: `Apisecret ${process.env.VDOCIPHER_API_SECRET}`,
+          },
+        }
+      );
+
+      res.json(response.data);
+    } catch (error: any) {
+      return next(new AppError(error.message, 400));
+    }
+  }
+);
