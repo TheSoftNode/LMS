@@ -26,14 +26,16 @@ router
 
 router
   .route("/delete-course/:id")
-  .delete(isAuthenticated, restrictTo("admin"), deleteCourse);
+  .delete(refreshToken, isAuthenticated, restrictTo("admin"), deleteCourse);
 
 router.route("/getVdoCipherOTP").post(generateVideoUrl);
 
 router.route("/get-course/:id").get(getSingleCourse);
 router.route("/get-courses").get(getAllCourses);
-router.route("/get-course-content/:id").get(isAuthenticated, getCourseByUser);
-router.route("/add-question").put(isAuthenticated, addQuestion);
-router.route("/add-answer").put(isAuthenticated, addAnswer);
+router
+  .route("/get-course-content/:id")
+  .get(refreshToken, isAuthenticated, getCourseByUser);
+router.route("/add-question").put(refreshToken, isAuthenticated, addQuestion);
+router.route("/add-answer").put(refreshToken, isAuthenticated, addAnswer);
 
 export default router;
