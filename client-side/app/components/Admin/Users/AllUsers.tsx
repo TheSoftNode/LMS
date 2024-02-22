@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
 import {
+  useDeleteUserMutation,
   useGetAllUsersQuery,
   useUpdateUserRoleMutation,
 } from "../../../../redux/features/user/userApi";
@@ -22,10 +23,14 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
   const [active, setActive] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("admin");
+  const [open, setOpen] = useState(false);
+  const [userId, setUserId] = useState("");
 
   const { isLoading, data, error } = useGetAllUsersQuery({});
   const [updateUserRole, { error: updateError, isSuccess }] =
     useUpdateUserRoleMutation({});
+  const [deleteUser, { isSuccess: deleteSuccess, error: deleteError }] =
+    useDeleteUserMutation({});
 
   useEffect(() => {
     if (updateError) {
@@ -39,7 +44,18 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       toast.success("User role updated successfully");
       setActive(false);
     }
-  }, [updateError, isSuccess]);
+
+    if (deleteSuccess) {
+      toast.success("User Deleted successfully!");
+      setOpen(false);
+    }
+    if (deleteError) {
+      if ("data" in deleteError) {
+        const errorMessage = deleteError as any;
+        toast.error(errorMessage.data.message);
+      }
+    }
+  }, [updateError, isSuccess, deleteSuccess, deleteError]);
 
   const columns = [
     {
@@ -80,7 +96,12 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       renderCell: (params: any) => {
         return (
           <>
-            <Button>
+            <Button
+              onClick={() => {
+                setOpen(!open);
+                setUserId(params.row.id);
+              }}
+            >
               <AiOutlineDelete
                 className="dark: text-white text-black"
                 size={20}
@@ -142,6 +163,11 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
 
   const handleSubmit = async () => {
     await updateUserRole({ email, role });
+  };
+
+  const handleDelete = async () => {
+    const id = userId;
+    await deleteUser(id);
   };
 
   return (
@@ -241,6 +267,35 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
                       onClick={handleSubmit}
                     >
                       Submit
+                    </div>
+                  </div>
+                </Box>
+              </Modal>
+            )}
+
+            {open && (
+              <Modal
+                open={open}
+                onClose={() => setOpen(!open)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[45px] bg-white dark:bg-slate-900 rounded-[8px] shadow p-4 outline-none">
+                  <h1 className={`${styles.title}`}>
+                    Are you sure you want to delete this user?
+                  </h1>
+                  <div className="flex w-full items-center justify-between mb-6 mt-4">
+                    <div
+                      onClick={() => setOpen(!open)}
+                      className={`${styles.button} !w-[120px] h-[30px] bg-[#57c7a3]`}
+                    >
+                      Cancel
+                    </div>
+                    <div
+                      onClick={handleDelete}
+                      className={`${styles.button} !w-[120px] h-[30px] bg-[#d63f3f]`}
+                    >
+                      Delete
                     </div>
                   </div>
                 </Box>
