@@ -197,7 +197,7 @@ export const refreshToken = catchAsync(
     //   accessToken,
     //   refreshToken,
     // });
-    next();
+    return next();
   }
 );
 

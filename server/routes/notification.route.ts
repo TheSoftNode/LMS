@@ -5,11 +5,11 @@ import {
 } from "../controllers/notification.controller";
 import { isAuthenticated } from "../middlewares/protectRoute2";
 import { restrictTo } from "../middlewares/roleManager2";
-import { refreshToken } from "../controllers/auth.controller";
+// import { refreshToken } from "../controllers/auth.controller";
 
 const router = express.Router();
 
-router.use(refreshToken);
+// router.use(refreshToken);
 router.use(isAuthenticated);
 
 router

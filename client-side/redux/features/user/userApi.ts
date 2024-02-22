@@ -43,6 +43,18 @@ export const userApi = apiSlice.injectEndpoints({
         credentials: "include" as const,
       }),
     }),
+
+    updateUserRole: builder.mutation({
+      query: ({ email, role }) => ({
+        url: "users/update-user-role",
+        method: "PATCH",
+        body: {
+          email,
+          role,
+        },
+        credentials: "include" as const,
+      }),
+    }),
   }),
 });
 
@@ -51,4 +63,5 @@ export const {
   useEditProfileMutation,
   useUpdatePasswordMutation,
   useGetAllUsersQuery,
+  useUpdateUserRoleMutation,
 } = userApi;

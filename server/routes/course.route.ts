@@ -16,26 +16,21 @@ import { refreshToken } from "../controllers/auth.controller";
 
 const router = express.Router();
 
-router
-  .route("/create-course")
-  .post(refreshToken, isAuthenticated, restrictTo("admin"), uploadCourse);
-
-router
-  .route("/edit-course/:id")
-  .put(isAuthenticated, restrictTo("admin"), editCourse);
-
-router
-  .route("/delete-course/:id")
-  .delete(refreshToken, isAuthenticated, restrictTo("admin"), deleteCourse);
-
 router.route("/getVdoCipherOTP").post(generateVideoUrl);
 
 router.route("/get-course/:id").get(getSingleCourse);
 router.route("/get-courses").get(getAllCourses);
-router
-  .route("/get-course-content/:id")
-  .get(refreshToken, isAuthenticated, getCourseByUser);
-router.route("/add-question").put(refreshToken, isAuthenticated, addQuestion);
-router.route("/add-answer").put(refreshToken, isAuthenticated, addAnswer);
+
+router.use(isAuthenticated);
+
+router.route("/get-course-content/:id").get(getCourseByUser);
+router.route("/add-question").put(addQuestion);
+router.route("/add-answer").put(addAnswer);
+
+router.use(restrictTo("admin"));
+
+router.route("/create-course").post(uploadCourse);
+router.route("/edit-course/:id").put(editCourse);
+router.route("/delete-course/:id").delete(deleteCourse);
 
 export default router;

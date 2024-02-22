@@ -1,13 +1,16 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import { AiOutlineDelete, AiOutlineMail } from "react-icons/ai";
 import { useTheme } from "next-themes";
-import { FiEdit2 } from "react-icons/fi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
-import { useGetAllUsersQuery } from "../../../../redux/features/user/userApi";
+import {
+  useGetAllUsersQuery,
+  useUpdateUserRoleMutation,
+} from "../../../../redux/features/user/userApi";
 import { styles } from "@/app/styles/style";
+import toast from "react-hot-toast";
 
 type Props = {
   isTeam: boolean;
@@ -15,8 +18,28 @@ type Props = {
 
 const AllUsers: FC<Props> = ({ isTeam }) => {
   const { theme, setTheme } = useTheme();
+
   const [active, setActive] = useState(false);
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("admin");
+
   const { isLoading, data, error } = useGetAllUsersQuery({});
+  const [updateUserRole, { error: updateError, isSuccess }] =
+    useUpdateUserRoleMutation({});
+
+  useEffect(() => {
+    if (updateError) {
+      if ("data" in updateError) {
+        const errorMessage = updateError as any;
+        toast.error(errorMessage.data.message);
+      }
+    }
+
+    if (isSuccess) {
+      toast.success("User role updated successfully");
+      setActive(false);
+    }
+  }, [updateError, isSuccess]);
 
   const columns = [
     {
@@ -117,20 +140,26 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       });
   }
 
+  const handleSubmit = async () => {
+    await updateUserRole({ email, role });
+  };
+
   return (
     <div className="mt-[120px]">
       {isLoading ? (
         <Loader />
       ) : (
         <Box m-20px>
-          <div className="w-full flex justify-end">
-            <div
-              className={`${styles.button} !w-[200px] !h-[35px] dark:bg-[#57c7a3] dark:border dark:border-[#ffffff6c]`}
-              onClick={() => setActive(!active)}
-            >
-              Add New Member
+          {isTeam && (
+            <div className="w-full flex justify-end">
+              <div
+                className={`${styles.button} !w-[200px] !rounded-[10px] !h-[35px] dark:bg-[#57c7a3] dark:border dark:border-[#ffffff6c]`}
+                onClick={() => setActive(!active)}
+              >
+                Add New Member
+              </div>
             </div>
-          </div>
+          )}
           <Box
             m="40px 0 0 0"
             height="80vh"
@@ -184,6 +213,39 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
             }}
           >
             <DataGrid checkboxSelection rows={rows} columns={columns} />
+
+            {active && (
+              <Modal
+                open={active}
+                onClose={() => setActive(!active)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[45px] bg-white dark:bg-slate-900 rounded-[8px] shadow p-4 outline-none">
+                  <h1 className={`${styles.title}`}>Add New Member</h1>
+                  <div className="mt-4">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter email..."
+                      className={`${styles.input}`}
+                    />
+                    <select name="" id="" className={`${styles.input} !mt-6`}>
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </select>
+                    <br />
+                    <div
+                      className={`${styles.button} my-6 !h-[30px]`}
+                      onClick={handleSubmit}
+                    >
+                      Submit
+                    </div>
+                  </div>
+                </Box>
+              </Modal>
+            )}
           </Box>
         </Box>
       )}
