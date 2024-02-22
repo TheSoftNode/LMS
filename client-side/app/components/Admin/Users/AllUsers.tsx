@@ -50,9 +50,9 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
     }
 
     if (deleteSuccess) {
+      setOpen(false);
       refetch();
       toast.success("User Deleted successfully!");
-      setOpen(false);
     }
     if (deleteError) {
       if ("data" in deleteError) {
