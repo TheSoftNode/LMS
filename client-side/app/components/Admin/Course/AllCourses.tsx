@@ -6,12 +6,13 @@ import { useTheme } from "next-themes";
 import { FiEdit2 } from "react-icons/fi";
 import {
   useDeleteCourseMutation,
-  useGetAllCourseQuery,
+  useGetAllCoursesByAdminQuery,
 } from "../../../../redux/features/courses/coursesApi";
 import Loader from "../../Loader/Loader";
 import { format } from "timeago.js";
 import { styles } from "../../../../app/styles/style";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 type Props = {};
 
@@ -22,7 +23,7 @@ const AllCourses = (props: Props) => {
   const [courseId, setCourseId] = useState("");
   const [active, setActive] = useState(false);
 
-  const { isLoading, data, refetch } = useGetAllCourseQuery(
+  const { isLoading, data, refetch } = useGetAllCoursesByAdminQuery(
     {},
     { refetchOnMountOrArgChange: true }
   );
@@ -61,9 +62,9 @@ const AllCourses = (props: Props) => {
       renderCell: (params: any) => {
         return (
           <>
-            <Button>
-              <FiEdit2 className="dark: text-white text-black" size={20} />
-            </Button>
+            <Link href={`/admin/edit-course/${params.row.id}`}>
+              <FiEdit2 className="dark:text-white text-black" size={20} />
+            </Link>
           </>
         );
       },

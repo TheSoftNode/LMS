@@ -6,6 +6,7 @@ import {
   editCourse,
   generateVideoUrl,
   getAllCourses,
+  getAllCoursesByAdmin,
   getCourseByUser,
   getSingleCourse,
   uploadCourse,
@@ -32,5 +33,5 @@ router.use(restrictTo("admin"));
 router.route("/create-course").post(uploadCourse);
 router.route("/edit-course/:id").put(editCourse);
 router.route("/delete-course/:id").delete(deleteCourse);
-
+router.route("/get-courses-by-admin").get(getAllCoursesByAdmin);
 export default router;
