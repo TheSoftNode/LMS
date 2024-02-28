@@ -49,6 +49,11 @@ const courseSchema = new Schema<ICourse>(
       required: [true, "Course must have a description"],
     },
 
+    categories: {
+      type: String,
+      required: true,
+    },
+
     price: {
       type: Number,
       required: [true, "Course must have a price"],

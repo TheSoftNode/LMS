@@ -5,6 +5,7 @@ import IReview from "./reviewInterface";
 export default interface ICourse extends Document {
   name: string;
   description: string;
+  categories: string;
   price: number;
   estimatedPrice?: number;
   thumbnail: object;
