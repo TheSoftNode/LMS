@@ -1,0 +1,544 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User Management API",
+        "version": "1.0.0",
+        "description": "API for user authentication and management, including account verification, password resets, and user information updates."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1"
+        }
+    ],
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "avatar": {
+                        "type": "object",
+                        "properties": {
+                            "public_id": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "user",
+                            "admin"
+                        ]
+                    },
+                    "isVerified": {
+                        "type": "boolean"
+                    },
+                    "courses": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "courseId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "role",
+                    "isVerified",
+                    "active"
+                ]
+            }
+        }
+    },
+    "paths": {
+        "/verify-account": {
+            "post": {
+                "summary": "Verify User Account",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "passwordConfirm": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "passwordConfirm"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Account verification email sent successfully."
+                        },
+                        "400": {
+                            "description": "Email already exists or validation errors."
+                        }
+                    }
+                }
+            }
+        },
+        "/signUp": {
+            "post": {
+                "summary": "Sign Up a User",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "activation_code": {
+                                        "type": "string"
+                                    },
+                                    "activation_token": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "activation_code",
+                                    "activation_token"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "User signed up successfully."
+                        },
+                        "401": {
+                            "description": "Invalid activation token or code."
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "Log In a User",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "User logged in successfully."
+                        },
+                        "400": {
+                            "description": "Email or password not provided."
+                        },
+                        "401": {
+                            "description": "Incorrect email or password."
+                        }
+                    }
+                }
+            }
+        },
+        "/social-auth": {
+            "post": {
+                "summary": "Authenticate via Social Login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "avatar": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "name"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "User authenticated via social login."
+                        },
+                        "400": {
+                            "description": "Invalid social authentication data."
+                        }
+                    }
+                }
+            }
+        },
+        "/refreshToken": {
+            "get": {
+                "summary": "Refresh Authentication Token",
+                "responses": {
+                    "200": {
+                        "description": "Token refreshed successfully."
+                    },
+                    "401": {
+                        "description": "Invalid or expired refresh token."
+                    }
+                }
+            }
+        },
+        "/forgot-password": {
+            "post": {
+                "summary": "Request Password Reset",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "required": [
+                                    "email"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Password reset email sent."
+                        },
+                        "400": {
+                            "description": "Email not provided or does not exist."
+                        }
+                    }
+                }
+            }
+        },
+        "/reset-password/{token}": {
+            "patch": {
+                "summary": "Reset Password",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "passwordConfirm": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "password",
+                                    "passwordConfirm"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Password reset successfully."
+                        },
+                        "400": {
+                            "description": "Invalid token or password validation errors."
+                        },
+                        "404": {
+                            "description": "Token not found or expired."
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "summary": "Log Out User",
+                "responses": {
+                    "200": {
+                        "description": "User logged out successfully."
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "summary": "Get User Information",
+                "responses": {
+                    "200": {
+                        "description": "User information retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    }
+                }
+            }
+        },
+        "/update-user-info": {
+            "patch": {
+                "summary": "Update User Information",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "User information updated successfully."
+                        },
+                        "400": {
+                            "description": "Validation errors."
+                        }
+                    }
+                }
+            }
+        },
+        "/update-password": {
+            "patch": {
+                "summary": "Update User Password",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "oldPassword": {
+                                        "type": "string"
+                                    },
+                                    "newPassword": {
+                                        "type": "string"
+                                    },
+                                    "confirmPassword": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "oldPassword",
+                                    "newPassword",
+                                    "confirmPassword"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Password updated successfully."
+                        },
+                        "400": {
+                            "description": "Validation errors or old password is incorrect."
+                        }
+                    }
+                }
+            }
+        },
+        "/upload-profile-picture": {
+            "patch": {
+                "summary": "Upload User Profile Picture",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "avatar": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "avatar"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Profile picture uploaded successfully."
+                        },
+                        "400": {
+                            "description": "Invalid file format or size."
+                        }
+                    }
+                }
+            }
+        },
+        "/update-user-role": {
+            "patch": {
+                "summary": "Update User Role (Admin only)",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "user",
+                                            "admin"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "id",
+                                    "role"
+                                ]
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "User role updated successfully."
+                        },
+                        "403": {
+                            "description": "Forbidden: Only admins can update roles."
+                        },
+                        "404": {
+                            "description": "User not found."
+                        }
+                    }
+                }
+            }
+        },
+        "/get-users": {
+            "get": {
+                "summary": "Get All Users (Admin only)",
+                "responses": {
+                    "200": {
+                        "description": "List of all users retrieved successfully."
+                    },
+                    "403": {
+                        "description": "Forbidden: Only admins can access this route."
+                    }
+                }
+            }
+        },
+        "/delete-user/{id}": {
+            "delete": {
+                "summary": "Delete a User (Admin only)",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User deleted successfully."
+                    },
+                    "403": {
+                        "description": "Forbidden: Only admins can delete users."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    }
+                }
+            }
+        }
+    }
+}
