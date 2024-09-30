@@ -13,8 +13,8 @@ export default interface IUser extends Document {
   isVerified: boolean;
   courses: Array<{ courseId: string }>;
   passwordChangedAt: any;
-  passwordResetToken: string;
-  passwordResetExpires: Date;
+  passwordResetToken: string | undefined;
+  passwordResetExpires: Date | undefined;
   active: boolean;
   correctPassword: (
     candidatePassword: string,

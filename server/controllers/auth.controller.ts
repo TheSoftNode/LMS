@@ -143,7 +143,7 @@ export const logout = catchAsync(
         success: true,
         message: "Logged out successfully",
       });
-    } catch (err)
+    } catch (err: any)
     {
       return next(new AppError(err.message, 400));
     }
@@ -172,7 +172,7 @@ export const refreshToken = catchAsync(
     const currentUser = await User.findById(decoded.id);
 
     // 4) Check if user changed password after the token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat))
+    if (currentUser?.changedPasswordAfter(decoded.iat ?? 0))
     {
       return next(
         new AppError(
@@ -247,7 +247,7 @@ export const updatePassword = catchAsync(
     // 1) Get user from collection
     const user = await User.findById(req.user._id).select("+password");
 
-    if (user?.password === "undefined")
+    if (!user || user.password === "undefined")
     {
       return next(new AppError("Invalid user", 400));
     }
@@ -263,7 +263,10 @@ export const updatePassword = catchAsync(
     await user.save();
     // User.findByIdAndUpdate will NOT work as intended!
 
-    await redis.set(req.user?._id, JSON.stringify(user));
+    if (req.user?._id)
+    {
+      await redis.set(req.user._id.toString(), JSON.stringify(user));
+    }
 
     res.status(200).json({
       success: true,
