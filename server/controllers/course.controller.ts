@@ -12,10 +12,12 @@ import axios from "axios";
 
 // Upload course
 export const uploadCourse = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const data = req.body;
     const thumbnail = data.thumbnail;
-    if (thumbnail) {
+    if (thumbnail)
+    {
       const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
         folder: "courses",
       });
@@ -32,7 +34,8 @@ export const uploadCourse = catchAsync(
 
 // Edit course
 export const editCourse = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const data = req.body;
     const thumbnail = data.thumbnail;
 
@@ -40,7 +43,8 @@ export const editCourse = catchAsync(
 
     const courseData = (await Course.findById(courseId)) as any;
 
-    if (thumbnail && !thumbnail.startsWith("https")) {
+    if (thumbnail && !thumbnail.startsWith("https"))
+    {
       await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
 
       const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
@@ -53,7 +57,8 @@ export const editCourse = catchAsync(
       };
     }
 
-    if (thumbnail.startsWith("https")) {
+    if (thumbnail.startsWith("https"))
+    {
       data.thumbnail = {
         public_id: courseData.thumbnail.public_id,
         url: courseData.thumbnail.url,
@@ -75,14 +80,17 @@ export const editCourse = catchAsync(
 
 // Get single course --- without purchasing
 export const getSingleCourse = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const courseId = req.params.Id;
     const isCacheExist = await redis.get(courseId);
     let course: any;
 
-    if (isCacheExist) {
+    if (isCacheExist)
+    {
       course = JSON.parse(isCacheExist);
-    } else {
+    } else
+    {
       course = await Course.findById(req.params.id).select(
         "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
       );
@@ -99,7 +107,8 @@ export const getSingleCourse = catchAsync(
 
 // Get all courses
 export const getAllCourses = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     // const isCacheExist = await redis.get("allCourses");
     // let courses: any;
 
@@ -122,7 +131,8 @@ export const getAllCourses = catchAsync(
 );
 
 export const getCourseByUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const userCourseList = req.user?.courses;
     const courseId = req.params.Id;
 
@@ -144,18 +154,21 @@ export const getCourseByUser = catchAsync(
 );
 
 // Add question to a course
-interface IAddQuestionData {
+interface IAddQuestionData
+{
   question: string;
   courseId: string;
   contentId: string;
 }
 
 export const addQuestion = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { question, courseId, contentId }: IAddQuestionData = req.body;
     const course = await Course.findById(courseId);
 
-    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+    if (!mongoose.Types.ObjectId.isValid(contentId))
+    {
       return next(new AppError("invalid content id", 400));
     }
 
@@ -193,7 +206,8 @@ export const addQuestion = catchAsync(
 );
 
 // Add question to a course
-interface IAddAnswerData {
+interface IAddAnswerData
+{
   answer: string;
   courseId: string;
   contentId: string;
@@ -201,12 +215,14 @@ interface IAddAnswerData {
 }
 
 export const addAnswer = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { answer, courseId, contentId, questionId }: IAddAnswerData =
       req.body;
     const course = await Course.findById(courseId);
 
-    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+    if (!mongoose.Types.ObjectId.isValid(contentId))
+    {
       return next(new AppError("invalid content id", 400));
     }
 
@@ -234,14 +250,16 @@ export const addAnswer = catchAsync(
     // save the updated course
     await course?.save();
 
-    if (req.user?._id === question.user._id) {
+    if (req.user?._id === question.user._id)
+    {
       // Create a notification
       await Notification.create({
         user: req.user?._id,
         title: "New Question Reply Received",
         message: `You have new question reply in ${courseContent.title}`,
       });
-    } else {
+    } else
+    {
       const data = {
         name: question.user.name,
         title: courseContent.title,
@@ -251,9 +269,11 @@ export const addAnswer = catchAsync(
         email: question.user.email,
       };
 
-      try {
+      try
+      {
         await new Email(userEmail, data).questionReply();
-      } catch (ex: any) {
+      } catch (ex: any)
+      {
         return next(new AppError(ex.message, 500));
       }
     }
@@ -266,14 +286,16 @@ export const addAnswer = catchAsync(
 );
 
 // Add review in course
-interface IAddReviewData {
+interface IAddReviewData
+{
   review: string;
   rating: number;
   userId: string;
 }
 
 export const addReview = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const userCourseList = req.user?.courses;
     const courseId = req.params.id;
 
@@ -301,7 +323,8 @@ export const addReview = catchAsync(
 
     let avg = 0;
 
-    course?.reviews.forEach((rev: any) => {
+    course?.reviews.forEach((rev: any) =>
+    {
       avg += rev.ratings;
     });
 
@@ -324,14 +347,16 @@ export const addReview = catchAsync(
 );
 
 // Add reply in review
-interface IAddReviewReplyData {
+interface IAddReviewReplyData
+{
   comment: string;
   courseId: string;
   reviewId: string;
 }
 
 export const addReplyToReview = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { comment, courseId, reviewId } = req.body as IAddReviewReplyData;
 
     const course = await Course.findById(courseId);
@@ -349,7 +374,8 @@ export const addReplyToReview = catchAsync(
       comment,
     };
 
-    if (!review.commentReplies) {
+    if (!review.commentReplies)
+    {
       review.commentReplies = [];
     }
 
@@ -366,7 +392,8 @@ export const addReplyToReview = catchAsync(
 
 // Delete course -- only by admin
 export const deleteCourse = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { id } = req.params;
 
     const course = await Course.findById(id);
@@ -386,15 +413,18 @@ export const deleteCourse = catchAsync(
 
 // get all courses --- only for admin
 export const getAllCoursesByAdmin = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     getAllCoursesService(res);
   }
 );
 
 // Generate video url
 export const generateVideoUrl = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
+    try
+    {
       const { videoId } = req.body;
 
       const response = await axios.post(
@@ -410,7 +440,8 @@ export const generateVideoUrl = catchAsync(
       );
 
       res.json(response.data);
-    } catch (error: any) {
+    } catch (error: any)
+    {
       return next(new AppError(error.message, 400));
     }
   }
