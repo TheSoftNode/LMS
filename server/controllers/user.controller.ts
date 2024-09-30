@@ -4,14 +4,15 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../errorsHandlers/appError";
 import cloudinary from "cloudinary";
 import
-  {
-    getAllUsersService,
-    getUserById,
-    updateUserRoleService,
-  } from "../services/user.service";
+{
+  getAllUsersService,
+  getUserById,
+  updateUserRoleService,
+} from "../services/user.service";
 import { redis } from "../dataAccess/redis";
 import { sendToken } from "../utils/sendToken";
 import { ISocialAuthBody } from "../DTOs/UserDtos";
+import { Types } from "mongoose";
 
 // Get my info - for user only
 export const getUserInfo = catchAsync(
@@ -35,8 +36,15 @@ export const socialAuth = catchAsync(
       await newUser?.save({ validateBeforeSave: false });
       sendToken(newUser, 200, res);
     }
+    else if (user)
+    {
+      sendToken(user, 200, res);
+    } else
+    {
+      // Handle the case where user is null (this should not happen, but TypeScript needs this check)
+      return next(new Error('Failed to authenticate user'));
+    }
 
-    sendToken(user, 200, res);
   }
 );
 
@@ -57,7 +65,7 @@ export const updateUserRole = catchAsync(
     const isUserExist = await User.findOne({ email });
     if (isUserExist)
     {
-      const id: string = isUserExist._id.toString();
+      const id: string = (isUserExist._id).toString();
       updateUserRoleService(res, id, role);
     } else
     {

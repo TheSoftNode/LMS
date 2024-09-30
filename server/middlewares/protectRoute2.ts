@@ -7,7 +7,8 @@ import User from "../models/user.model";
 import { refreshToken } from "../controllers/auth.controller";
 
 export const isAuthenticated = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const access_token = req.cookies.access_token;
 
     if (!access_token)
@@ -21,13 +22,17 @@ export const isAuthenticated = catchAsync(
     if (!decoded) return next(new AppError("Invalid Access Token", 400));
 
     // Check if the access token is expired
-    if (decoded.exp && decoded.exp <= Date.now() / 100) {
-      try {
+    if (decoded.exp && decoded.exp <= Date.now() / 100)
+    {
+      try
+      {
         await refreshToken(req, res, next);
-      } catch (error) {
+      } catch (error)
+      {
         return next(error);
       }
-    } else {
+    } else
+    {
       const user = await redis.get(decoded.id);
       const currentUser = await User.findById(decoded.id);
 
@@ -35,7 +40,8 @@ export const isAuthenticated = catchAsync(
         return next(new AppError("Please login to access this resource", 400));
 
       // 4) Check if user changed password after the token was issued
-      if (currentUser.changedPasswordAfter(decoded.iat)) {
+      if (currentUser?.changedPasswordAfter(decoded.iat ?? 0))
+      {
         return next(
           new AppError(
             "User recently changed password! Please log in again.",

@@ -69,30 +69,39 @@ export const createLayout = catchAsync(
         success: true,
         message: "Layout created successfully",
       });
-    } catch (ex)
+    } catch (ex: unknown)
     {
-      next(new AppError(ex.message, 500));
+      if (ex instanceof Error)
+      {
+        return next(new AppError(ex.message, 500));
+      }
+      // If it's not an Error object, we'll pass a generic error message
+      return next(new AppError("An unexpected error occurred", 500));
     }
   }
 );
 
 // Edit layout
 export const editLayout = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { type } = req.body;
 
-    if (type === "Banner") {
+    if (type === "Banner")
+    {
       const bannerData: any = await Layout.findOne({ type: "Banner" });
       const { image, title, subTitle } = req.body;
 
       let data;
-      if (!image.startsWith("https")) {
+      if (!image.startsWith("https"))
+      {
         data = await cloudinary.v2.uploader.upload(image, {
           folder: "layout",
         });
       }
 
-      if (bannerData && bannerData.banner && bannerData.banner.image && bannerData.banner.image.public_id) {
+      if (bannerData && bannerData.banner && bannerData.banner.image && bannerData.banner.image.public_id)
+      {
         await cloudinary.v2.uploader.destroy(bannerData.banner.image.public_id);
       }
 
@@ -110,18 +119,22 @@ export const editLayout = catchAsync(
         subTitle,
       };
 
-      if (bannerData) {
+      if (bannerData)
+      {
         await Layout.findByIdAndUpdate(bannerData._id, { banner });
-      } else {
+      } else
+      {
         await Layout.create({ banner });
       }
     }
 
-    if (type === "FAQ") {
+    if (type === "FAQ")
+    {
       const { faq } = req.body;
       const faqItem = await Layout.findOne({ type: "FAQ" });
       const faqItems = await Promise.all(
-        faq.map(async (item: any) => {
+        faq.map(async (item: any) =>
+        {
           return {
             question: item.question,
             answer: item.answer,
@@ -129,12 +142,14 @@ export const editLayout = catchAsync(
         })
       );
 
-      if (faqItem) {
+      if (faqItem)
+      {
         await Layout.findByIdAndUpdate(faqItem._id, {
           type: "FAQ",
           faq: faqItems,
         });
-      } else {
+      } else
+      {
         await Layout.create({
           type: "FAQ",
           faq: faqItems,
@@ -142,23 +157,27 @@ export const editLayout = catchAsync(
       }
     }
 
-    if (type === "Categories") {
+    if (type === "Categories")
+    {
       const { categories } = req.body;
       const categoriesItem = await Layout.findOne({ type: "Categories" });
       const categoriesItems = await Promise.all(
-        categories.map(async (item: any) => {
+        categories.map(async (item: any) =>
+        {
           return {
             title: item.title,
           };
         })
       );
 
-      if (categoriesItem) {
+      if (categoriesItem)
+      {
         await Layout.findByIdAndUpdate(categoriesItem._id, {
           type: "Categories",
           categories: categoriesItems,
         });
-      } else {
+      } else
+      {
         await Layout.create({
           type: "Categories",
           categories: categoriesItems,

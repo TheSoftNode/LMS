@@ -1,8 +1,10 @@
-import { Document, ObjectId } from "mongoose";
+import { Document, ObjectId, Types } from "mongoose";
 import { ICourseData } from "./courseDataInterface";
 import IReview from "./reviewInterface";
 
-export default interface ICourse extends Document {
+export default interface ICourse extends Document
+{
+  _id: Types.ObjectId;
   name: string;
   description: string;
   categories: string;

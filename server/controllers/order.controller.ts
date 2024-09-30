@@ -7,13 +7,15 @@ import catchAsync from "../utils/catchAsync";
 import { IOrder } from "../models/Interfaces/orderInterface";
 import AppError from "../errorsHandlers/appError";
 import Email from "../emails/email";
+import IUser from "../models/Interfaces/userInterface";
+import ICourse from "../models/Interfaces/courseInterface";
 
 export const createOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) =>
   {
     const { courseId, payment_info } = req.body as IOrder;
 
-    const user = await User.findById(req.user?._id);
+    const user = await User.findById(req.user?._id) as IUser;
 
     if (!user)
     {
@@ -29,7 +31,7 @@ export const createOrder = catchAsync(
       return next(new AppError("You have already purchased this course", 400));
     }
 
-    const course = await Course.findById(courseId);
+    const course = await Course.findById(courseId) as ICourse;
 
     if (!course)
     {
@@ -58,9 +60,13 @@ export const createOrder = catchAsync(
     try
     {
       await new Email(user, mailData).OrderConfirmation();
-    } catch (ex: any)
+    } catch (ex: unknown)
     {
-      return next(new AppError(ex.message, 500));
+      if (ex instanceof Error)
+      {
+        return next(new AppError(ex.message, 500));
+      }
+      return next(new AppError("An error occurred while sending email", 500));
     }
 
     user.courses.push({ courseId: courseId.toString() });

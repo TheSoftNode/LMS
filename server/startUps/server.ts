@@ -18,8 +18,13 @@ dotenv.config({
 });
 
 // Bring in the connection string
-const DB_CLOUD: string =
-  process.env.DB_CLOUD.replace("<password>", process.env.PASSWORD) || "";
+// const DB_CLOUD: string =
+//   process.env.DB_CLOUD.replace("<password>", process.env.PASSWORD) || "";
+
+// Bring in the connection string
+const DB_CLOUD: string = process.env.DB_CLOUD
+  ? process.env.DB_CLOUD.replace("<password>", process.env.PASSWORD || "")
+  : "";
 
 // Initialize cloudinary for storing images
 cloudImageStore();

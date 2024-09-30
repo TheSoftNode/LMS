@@ -112,12 +112,14 @@ export const getAllCourses = catchAsync(
     const isCacheExist = await redis.get("allCourses");
     let courses: any;
 
-    if (isCacheExist) {
+    if (isCacheExist)
+    {
       courses = JSON.parse(isCacheExist);
-    } else {
-    const courses = await Course.find().select(
-      "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
-    );
+    } else
+    {
+      const courses = await Course.find().select(
+        "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+      );
 
       await redis.set("allCourses", JSON.stringify(courses));
     }
