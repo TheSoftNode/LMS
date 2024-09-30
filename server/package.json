@@ -4,7 +4,15 @@
   "description": "A learning management system",
   "main": "startUps/server.ts",
   "scripts": {
-    "dev": "ts-node-dev  --respawn --transpile-only  startUps/server.ts"
+    "dev": "ts-node-dev  --respawn --transpile-only  startUps/server.ts",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ]
   },
   "repository": {
     "type": "git",
