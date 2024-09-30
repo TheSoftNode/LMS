@@ -34,4 +34,43 @@ describe('Auth Controller', () =>
         await User.deleteMany({});
         jest.clearAllMocks();
     });
+
+    describe('verifyAccount', () => {
+        it('should create an activation token and send an email', async () => {
+          const response = await request(testApp)
+            .post('/api/v1/users/verify-account')
+            .send({
+              name: 'Test User',
+              email: 'test@example.com',
+              password: 'password123',
+              passwordConfirm: 'password123'
+            });
+    
+          expect(response.status).toBe(201);
+          expect(response.body.success).toBe(true);
+          expect(response.body.activationToken).toBeDefined();
+        });
+    
+        it('should return an error if email already exists', async () => {
+          await User.create({
+            name: 'Existing User',
+            email: 'existing@example.com',
+            password: 'password123',
+            passwordConfirm: 'password123'
+          });
+    
+          const response = await request(testApp)
+            .post('/api/v1/users/verify-account')
+            .send({
+              name: 'Test User',
+              email: 'existing@example.com',
+              password: 'password123',
+              passwordConfirm: 'password123'
+            });
+    
+          expect(response.status).toBe(400);
+          expect(response.body.message).toBe('Email Already exists');
+        });
+      });
+    
 })
