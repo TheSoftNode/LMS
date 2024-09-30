@@ -5,7 +5,8 @@ import app from "./app";
 import { cloudImageStore } from "../dataAccess/cloudinary";
 
 // Handle uncaughtException
-process.on("uncaughtException", (err) => {
+process.on("uncaughtException", (err) =>
+{
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
   console.log(err.name, err.message);
   process.exit(1);
@@ -27,17 +28,20 @@ cloudImageStore();
 const port = process.env.PORT || 3000;
 
 // Listen to the port
-const server = app.listen(port, () => {
+const server = app.listen(port, () =>
+{
   console.log(`App running on port ${port}...`);
   connectDB(DB_CLOUD);
 });
 
 // Handle unhandled Rejections
-process.on("unhandledRejection", (err: any) => {
+process.on("unhandledRejection", (err: any) =>
+{
   console.log("UNHANDLED REJECTION! 💥 Shutting down...");
   console.log(err.name, err.message);
 
-  server.close(() => {
+  server.close(() =>
+  {
     process.exit(1);
   });
 });

@@ -1,12 +1,14 @@
 import { Document } from "mongoose";
 import IComment from "./commentInterface";
 
-export interface ILink extends Document {
+export interface ILink extends Document
+{
   title: string;
   url: string;
 }
 
-export interface ICourseData extends Document {
+export interface ICourseData extends Document
+{
   title: string;
   description: string;
   videoUrl: string;
