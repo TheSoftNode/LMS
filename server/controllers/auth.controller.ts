@@ -5,7 +5,8 @@ import User from "../models/user.model";
 import AppError from "../errorsHandlers/appError";
 import catchAsync from "../utils/catchAsync";
 import Email from "../emails/email";
-import {
+import
+{
   IActivationRequest,
   IForgotPassword,
   ILoginRequest,
@@ -15,7 +16,8 @@ import {
 } from "../DTOs/UserDtos";
 import { IActivationToken } from "../DTOs/UserDtos";
 import IUser from "../models/Interfaces/userInterface";
-import {
+import
+{
   SignInAccessToken,
   SignInRefreshToken,
   accessTokenOptions,
@@ -25,7 +27,8 @@ import {
 import { redis } from "../dataAccess/redis";
 
 // Create activation token and the token
-export const createActivationToken = (user: any): IActivationToken => {
+export const createActivationToken = (user: any): IActivationToken =>
+{
   const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
   const activationToken = jwt.sign(
@@ -41,7 +44,8 @@ export const createActivationToken = (user: any): IActivationToken => {
 
 // Verify Account before saving it.
 export const verifyAccount = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { name, email, password, passwordConfirm } = req.body;
 
     const checkEmail = await User.findOne({ email });
@@ -55,7 +59,6 @@ export const verifyAccount = catchAsync(
     };
 
     const { activationToken, activationCode } = createActivationToken(user);
-    // const activationCode = activationToken.activationCode;
 
     const data = {
       user: { name: user.name },
@@ -74,21 +77,10 @@ export const verifyAccount = catchAsync(
 
 // Sign Up the user - persist user data to database
 export const signUp = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    // 1) Getting token and check of it's there
-    // let activation_token: string;
-
-    // if (
-    //   req.headers.authorization &&
-    //   req.headers.authorization.startsWith("Bearer")
-    // ) {
-    //   activation_token = req.headers.authorization.split(" ")[1];
-    // }
-
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { activation_token, activation_code } =
       req.body as IActivationRequest;
-
-    console.log(activation_token);
 
     const newUser: { user: IUser; activationCode: string } = jwt.verify(
       activation_token,
@@ -113,17 +105,20 @@ export const signUp = catchAsync(
 
 //Log user in and send token
 export const login = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { email, password } = req.body as ILoginRequest;
 
     // 1) Check if email and password exist
-    if (!email || !password) {
+    if (!email || !password)
+    {
       return next(new AppError("Please provide email and password!", 400));
     }
     // 2) Check if user exists && password is correct
     const user = await User.findOne({ email }).select("+password");
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    if (!user || !(await user.correctPassword(password, user.password)))
+    {
       return next(new AppError("Incorrect email or password", 401));
     }
 
@@ -134,8 +129,10 @@ export const login = catchAsync(
 
 //logout User
 export const logout = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
+    try
+    {
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
 
@@ -146,7 +143,8 @@ export const logout = catchAsync(
         success: true,
         message: "Logged out successfully",
       });
-    } catch (err) {
+    } catch (err)
+    {
       return next(new AppError(err.message, 400));
     }
   }
@@ -154,7 +152,8 @@ export const logout = catchAsync(
 
 // update access token
 export const refreshToken = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const refresh_token = req.cookies.refresh_token as string;
 
     const decoded = jwt.verify(
@@ -173,7 +172,8 @@ export const refreshToken = catchAsync(
     const currentUser = await User.findById(decoded.id);
 
     // 4) Check if user changed password after the token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
+    if (currentUser.changedPasswordAfter(decoded.iat))
+    {
       return next(
         new AppError(
           "User recently changed password! Please log in again.",
@@ -191,24 +191,30 @@ export const refreshToken = catchAsync(
     res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
     await redis.set(user._id, JSON.stringify(user), "EX", 604800); //7days
-    
+
     return next();
   }
 );
 
 // Update user info
 export const updateUserInfo = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { name } = req.body as IUpdateUserInfo;
+
     const userId = req.user?._id;
+
+    if (!userId)
+    {
+      return next(new AppError('User not authenticated', 401));
+    }
+
     const user = await User.findById(userId);
 
-    // if (email && user) {
-    //   const emailExist = await User.findOne({ email });
-    //   if (emailExist) return next(new AppError("Email Already exists", 400));
-
-    //   user.email = email;
-    // }
+    if (!user)
+    {
+      return next(new AppError('User not found', 404));
+    }
 
     if (name && user) user.name = name;
 
@@ -225,7 +231,8 @@ export const updateUserInfo = catchAsync(
 
 // update password
 export const updatePassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { oldPassword, newPassword, confirmPassword } =
       req.body as IUpdatePassword;
 
@@ -240,11 +247,13 @@ export const updatePassword = catchAsync(
     // 1) Get user from collection
     const user = await User.findById(req.user._id).select("+password");
 
-    if (user?.password === "undefined") {
+    if (user?.password === "undefined")
+    {
       return next(new AppError("Invalid user", 400));
     }
     // 2) Check if POSTed current password is correct
-    if (!(await user.correctPassword(oldPassword, user.password))) {
+    if (!(await user.correctPassword(oldPassword, user.password)))
+    {
       return next(new AppError("Your current password is wrong.", 401));
     }
 
@@ -264,13 +273,15 @@ export const updatePassword = catchAsync(
 );
 
 export const forgotPassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     // 1) Get user based on POSTed email
     const { email } = req.body as IForgotPassword;
 
     const user = await User.findOne({ email });
 
-    if (!user) {
+    if (!user)
+    {
       return next(new AppError("There is no user with email address.", 404));
     }
 
@@ -279,7 +290,8 @@ export const forgotPassword = catchAsync(
     await user.save({ validateBeforeSave: false });
 
     // 3) Send it to user's email
-    try {
+    try
+    {
       const data = {
         user: { name: user.name },
         resetToken,
@@ -294,7 +306,8 @@ export const forgotPassword = catchAsync(
         status: "success",
         message: "Token sent to email!",
       });
-    } catch (err) {
+    } catch (err)
+    {
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
@@ -310,7 +323,8 @@ export const forgotPassword = catchAsync(
 );
 
 export const resetPassword = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     // 1) Get user based on the token
     const hashedToken = crypto
       .createHash("sha256")
@@ -323,7 +337,8 @@ export const resetPassword = catchAsync(
     });
 
     // 2) If token has not expired, and there is user, set the new password
-    if (!user) {
+    if (!user)
+    {
       return next(new AppError("Token is invalid or has expired", 400));
     }
     user.password = req.body.password;
@@ -340,6 +355,5 @@ export const resetPassword = catchAsync(
       message:
         "Password reset successful. Please, log in with your new password.",
     });
-    // sendToken(user, 200, res);
   }
 );
