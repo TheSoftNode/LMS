@@ -3,18 +3,20 @@ import User from "../models/user.model";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../errorsHandlers/appError";
 import cloudinary from "cloudinary";
-import {
-  getAllUsersService,
-  getUserById,
-  updateUserRoleService,
-} from "../services/user.service";
+import
+  {
+    getAllUsersService,
+    getUserById,
+    updateUserRoleService,
+  } from "../services/user.service";
 import { redis } from "../dataAccess/redis";
 import { sendToken } from "../utils/sendToken";
 import { ISocialAuthBody } from "../DTOs/UserDtos";
 
 // Get my info - for user only
 export const getUserInfo = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const userId = req.user._id;
     getUserById(userId, res);
   }
@@ -22,10 +24,12 @@ export const getUserInfo = catchAsync(
 
 // Authentication for logging in with social sites
 export const socialAuth = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { email, name, avatar } = req.body as ISocialAuthBody;
     const user = await User.findOne({ email });
-    if (!user) {
+    if (!user)
+    {
       //   const newUser = await User.create({ email, name, avatar });
       const newUser = new User({ email, name, avatar });
       await newUser?.save({ validateBeforeSave: false });
@@ -38,21 +42,25 @@ export const socialAuth = catchAsync(
 
 // get all users --- only for admin
 export const getAllUsers = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     getAllUsersService(res);
   }
 );
 
 // Update user role -- only by admin
 export const updateUserRole = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { email, role } = req.body;
 
     const isUserExist = await User.findOne({ email });
-    if (isUserExist) {
-      const id = isUserExist._id;
+    if (isUserExist)
+    {
+      const id: string = isUserExist._id.toString();
       updateUserRoleService(res, id, role);
-    } else {
+    } else
+    {
       res.status(400).json({
         success: false,
         message: "User not found",
@@ -63,7 +71,8 @@ export const updateUserRole = catchAsync(
 
 // Delete user -- only by admin
 export const deleteUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { id } = req.params;
 
     const user = await User.findById(id);
@@ -82,14 +91,17 @@ export const deleteUser = catchAsync(
 );
 
 export const updateProfilePicture = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) =>
+  {
     const { avatar } = req.body;
 
     const userId = req.user?._id;
     const user = await User.findById(userId);
 
-    if (avatar && user) {
-      if (user?.avatar?.public_id) {
+    if (avatar && user)
+    {
+      if (user?.avatar?.public_id)
+      {
         await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
       }
 
