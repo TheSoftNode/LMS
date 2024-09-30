@@ -4,7 +4,8 @@ import { redis } from "../dataAccess/redis";
 import jwt, { Secret } from "jsonwebtoken";
 import { ObjectId } from "mongoose";
 
-interface ITokenOptions {
+interface ITokenOptions
+{
   expires: Date;
   maxAge: number;
   httpOnly: boolean;
@@ -39,15 +40,14 @@ export const refreshTokenOptions: ITokenOptions = {
 };
 
 // Prepare and send token to the user
-export const sendToken = (user: IUser, statusCode: number, res: Response) => {
-  //   const accessToken = user.SignInAccessToken(user._id, "3m");
-  //   const refreshToken = user.SignInRefreshToken(user._id, "3d");
+export const sendToken = (user: IUser, statusCode: number, res: Response) =>
+{
 
   const accessToken = SignInAccessToken(user._id, "3m");
   const refreshToken = SignInRefreshToken(user._id, "3d");
 
   // Upload session to redis
-  redis.set(user._id, JSON.stringify(user) as any);
+  redis.set(user._id.toString(), JSON.stringify(user) as any);
 
   // Only set secure to true in production
   if (process.env.NODE_ENV === "production") accessTokenOptions.secure = true;
@@ -57,24 +57,28 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
   // Remove password from output
-  user.password = undefined;
+  const userWithoutPassword = { ...user, password: undefined };
+  // user.password = undefined;
 
   res.status(statusCode).json({
     success: true,
-    user,
+    user: userWithoutPassword,
+    // user,
     accessToken,
   });
 };
 
 // Sign Access token
-export const SignInAccessToken = function (id: ObjectId, exp: string) {
+export const SignInAccessToken = function (id: ObjectId, exp: string): string
+{
   return jwt.sign({ id }, process.env.ACCESS_TOKEN as Secret, {
     expiresIn: exp,
   });
 };
 
 // Sign Refresh token
-export const SignInRefreshToken = function (id: ObjectId, exp: string) {
+export const SignInRefreshToken = function (id: ObjectId, exp: string): string
+{
   return jwt.sign({ id }, process.env.REFRESH_TOKEN as Secret, {
     expiresIn: exp,
   });

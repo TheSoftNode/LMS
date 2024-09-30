@@ -7,21 +7,6 @@
     "dev": "ts-node-dev  --respawn --transpile-only  startUps/server.ts",
     "test": "jest tests"
   },
-  "jest": {
-    "verbose": true,
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "./jest.setup.js"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UcheTheo/LMS.git"

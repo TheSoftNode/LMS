@@ -13,12 +13,12 @@ import { readFileSync } from "fs";
 
 const app = express();
 
-const __dirname = path.resolve();
+// const __dirname = path.resolve();
 
 
 // Read Swagger JSON files
 const swaggerDocument = JSON.parse(
-  readFileSync(path.join(__dirname, './swagger/swagger.json'), 'utf8')
+  readFileSync(path.join(__dirname, '../swagger/swagger.json'), 'utf8')
 );
 
 // Swagger route for users

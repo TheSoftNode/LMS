@@ -9,11 +9,11 @@ const config: Config = {
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
     },
-    globals: {
-        'ts-jest': {
-            useESM: true,
-        },
-    },
+    // globals: {
+    //     'ts-jest': {
+    //         useESM: true,
+    //     },
+    // },
     testEnvironment: 'node',
 };
 

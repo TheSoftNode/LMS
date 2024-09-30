@@ -14,7 +14,8 @@
     "isolatedModules": true
   },
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+    "env.d.ts"
   ], // Adjust to include your TypeScript files
   "exclude": [
     "node_modules",
