@@ -5,7 +5,8 @@ import notificationRouter from "../routes/notification.route";
 import orderRouter from "../routes/order.route";
 import layoutRouter from "../routes/layout.route";
 
-export const mountedRoutes = function (app: any) {
+export const mountedRoutes = function (app: any)
+{
   app.use(express.json());
   app.use("/api/v1/users", userRouter);
   app.use("/api/v1/courses", courseRouter);

@@ -123,7 +123,7 @@ export const getAllCourses = catchAsync(
     }
 
     res.status(200).json({
-      count: courses.length,
+      count: courses?.length,
       success: true,
       courses,
     });
