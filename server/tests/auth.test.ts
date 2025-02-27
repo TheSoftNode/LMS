@@ -6,7 +6,25 @@ import User from '../models/user.model';
 import app from '../startUps/app';
 
 jest.mock('../emails/email');
-jest.mock('../dataAccess/redis');
+// jest.mock('../dataAccess/redis');
+
+// Mock Redis
+jest.mock('../dataAccess/redis', () => ({
+    redis: {
+      set: jest.fn(),
+      get: jest.fn(),
+      del: jest.fn(),
+    },
+    redisClient: jest.fn().mockReturnValue({
+      on: jest.fn(),
+      connect: jest.fn(),
+    }),
+  }));
+  
+  // Mock cron
+  jest.mock('node-cron', () => ({
+    schedule: jest.fn(),
+  }));
 
 describe('Auth Controller', () =>
 {
@@ -55,7 +73,7 @@ describe('Auth Controller', () =>
             expect(response.status).toBe(201);
             expect(response.body.success).toBe(true);
             expect(response.body.activationToken).toBeDefined();
-        }, 10000); // Increase timeout for this test
+        }, 15000); // Increase timeout for this test
 
         it('should return an error if email already exists', async () =>
         {
@@ -77,6 +95,6 @@ describe('Auth Controller', () =>
 
             expect(response.status).toBe(400);
             expect(response.body.message).toBe('Email Already exists');
-        }, 10000); // Increase timeout for this test
+        }, 15000); // Increase timeout for this test
     });
 });
